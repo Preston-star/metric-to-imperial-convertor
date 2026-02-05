@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { color: #1a73e8; text-align: center; }
+        input { width: 100%; padding: 15px; font-size: 1.2rem; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; margin-bottom: 20px; }
+        .result-box { background: #e8f0fe; padding: 20px; border-radius: 8px; text-align: center; min-height: 80px; }
+        .label { font-size: 0.9rem; color: #555; margin-bottom: 5px; }
+        #output { font-size: 1.8rem; font-weight: bold; color: #202124; margin: 0; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>CM to 1/32" Fraction</h2>
+    <div class="label">Enter Centimeters:</div>
+    <input type="number" id="cmInput" placeholder="Enter CM value..." oninput="convert()">
+    
+    <div class="result-box">
+        <div class="label">Imperial Measurement:</div>
+        <p id="output">0' 0"</p>
+    </div>
+</div>
+
+<script>
+function convert() {
+    let cm = document.getElementById('cmInput').value;
+    if (!cm || cm <= 0) {
+        document.getElementById('output').innerText = "0' 0\"";
+        return;
+    }
+
+    // 1. Total Inches
+    let totalInches = cm / 2.54;
+    
+    // 2. Feet and Whole Inches
+    let feet = Math.floor(totalInches / 12);
+    let inchesOnly = Math.floor(totalInches % 12);
+    
+    // 3. Calculate 32nds
+    let remainder = totalInches - Math.floor(totalInches);
+    let thirtySeconds = Math.round(remainder * 32);
+    
+    let fractionText = "";
+    
+    if (thirtySeconds === 32) {
+        inchesOnly++;
+        if (inchesOnly === 12) { feet++; inchesOnly = 0; }
+    } else if (thirtySeconds > 0) {
+        // 4. Simplify Fraction
+        let num = thirtySeconds;
+        let den = 32;
+        
+        const gcd = (a, b) => b ? gcd(b, a % b) : a;
+        let common = gcd(num, den);
+        
+        fractionText = ` ${num/common}/${den/common}`;
+    }
+
+    document.getElementById('output').innerText = `${feet}' ${inchesOnly}${fractionText}"`;
+}
+</script>
+
+</body>
+</html>
